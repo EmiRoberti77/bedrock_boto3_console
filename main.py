@@ -17,9 +17,7 @@ while (True):
         "accept": "*/*",
         "body": "{\"prompt\":\""+prompt+"\",\"maxTokens\":200,\"temperature\":0.7,\"topP\":1,\"stopSequences\":[],\"countPenalty\":{\"scale\":0},\"presencePenalty\":{\"scale\":0},\"frequencyPenalty\":{\"scale\":0}}"
     }
-    # print(kwargs)
     response = bedrock_runtime.invoke_model(**kwargs)
-    # print(response)
     response_body = json.loads(response.get('body').read())
     print(response_body)
     print("________________________________________________")
