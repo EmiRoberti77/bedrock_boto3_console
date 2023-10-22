@@ -6,9 +6,7 @@ bedrock_runtime = boto3.client(
     region_name="us-east-1"
 )
 
-prompt = """here is the text between the <text></text> tags
-<text>i have been to the beach and had ice cream</text>
-Give me a title to put in these tags <title></title>""".encode('unicode_escape').decode('utf-8')
+prompt = "create a story about a planet called Foo"
 
 
 kwargs = {
@@ -18,9 +16,10 @@ kwargs = {
     "body": "{\"prompt\":\"Human: "+prompt+"\\nAssistant:\",\"max_tokens_to_sample\":300,\"temperature\":1,\"top_k\":250,\"top_p\":0.999,\"stop_sequences\":[\"\\n\\nHuman:\"],\"anthropic_version\":\"bedrock-2023-05-31\"}"
 }
 
-response = bedrock_runtime.invoke_model(**kwargs)
-response_body = json.loads(response.get('body').read())
-print(response_body)
-print("________________________________________________")
-completion = response_body.get('completion')
-print(completion)
+response = bedrock_runtime.invoke_model_with_response_stream(**kwargs)
+stream = response.get('body')
+if stream:
+    for event in stream:
+        chunk = event.get('chunk')
+        if (chunk):
+            print(json.loads(chunk.get('bytes')).get('completion'), end="")
